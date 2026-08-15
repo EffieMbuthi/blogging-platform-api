@@ -1,6 +1,7 @@
 package com.BlogApp2.controller;
 
 import com.BlogApp2.dto.request.CommentRequest;
+import com.BlogApp2.dto.response.ApiResponse;
 import com.BlogApp2.dto.response.CommentResponse;
 import com.BlogApp2.service.CommentService;
 import jakarta.validation.Valid;
@@ -26,16 +27,18 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping
-    public ResponseEntity<CommentResponse> createComment(
+    public ResponseEntity<ApiResponse<CommentResponse>> createComment(
             @PathVariable UUID postId,
             @Valid @RequestBody CommentRequest request) {
         CommentResponse created = commentService.createComment(postId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("Comment created successfully", created));
     }
 
     @GetMapping
-    public ResponseEntity<List<CommentResponse>> getCommentsByPost(@PathVariable UUID postId) {
-        return ResponseEntity.ok(commentService.getCommentsByPost(postId));
+    public ResponseEntity<ApiResponse<List<CommentResponse>>> getCommentsByPost(@PathVariable UUID postId) {
+        List<CommentResponse> comments = commentService.getCommentsByPost(postId);
+        return ResponseEntity.ok(ApiResponse.success("Comments retrieved successfully", comments));
     }
 
     @DeleteMapping("/{commentId}")

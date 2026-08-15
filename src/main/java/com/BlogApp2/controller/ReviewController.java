@@ -1,6 +1,7 @@
 package com.BlogApp2.controller;
 
 import com.BlogApp2.dto.request.ReviewRequest;
+import com.BlogApp2.dto.response.ApiResponse;
 import com.BlogApp2.dto.response.ReviewResponse;
 import com.BlogApp2.service.ReviewService;
 import jakarta.validation.Valid;
@@ -20,16 +21,18 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @PostMapping
-    public ResponseEntity<ReviewResponse> createReview(
+    public ResponseEntity<ApiResponse<ReviewResponse>> createReview(
             @PathVariable UUID postId,
             @Valid @RequestBody ReviewRequest request) {
         ReviewResponse created = reviewService.createReview(postId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("Review created successfully", created));
     }
 
     @GetMapping
-    public ResponseEntity<List<ReviewResponse>> getReviewsByPost(@PathVariable UUID postId) {
-        return ResponseEntity.ok(reviewService.getReviewsByPost(postId));
+    public ResponseEntity<ApiResponse<List<ReviewResponse>>> getReviewsByPost(@PathVariable UUID postId) {
+        List<ReviewResponse> reviews = reviewService.getReviewsByPost(postId);
+        return ResponseEntity.ok(ApiResponse.success("Reviews retrieved successfully", reviews));
     }
 
     @DeleteMapping("/{reviewId}")
