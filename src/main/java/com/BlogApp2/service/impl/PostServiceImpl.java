@@ -14,6 +14,8 @@ import com.BlogApp2.repository.TagRepository;
 import com.BlogApp2.repository.UserRepository;
 import com.BlogApp2.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,11 +78,12 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PostSummaryDto> getAllPosts() {
-        return postRepository.findAll()
-                .stream()
-                .map(postMapper::toSummaryDto)
-                .toList();
+    public Page<PostSummaryDto> getAllPosts(String search, Pageable pageable) {
+        Page<Post> posts = (search == null || search.isBlank())
+                ? postRepository.findAll(pageable)
+                : postRepository.findByTitleContainingIgnoreCase(search, pageable);
+
+        return posts.map(postMapper::toSummaryDto);
     }
 
     @Override
