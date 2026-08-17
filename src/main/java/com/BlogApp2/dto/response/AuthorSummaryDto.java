@@ -2,6 +2,8 @@ package com.BlogApp2.dto.response;
 
 import java.util.UUID;
 
+//a stranger reading a blog post has no legitimate reason to see the author's email address
+//is what gets nested inside a post/comment, where only "who wrote this" matters, not their contact info.
 public class AuthorSummaryDto {
     private UUID id;
     private String name;

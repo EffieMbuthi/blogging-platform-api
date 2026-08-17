@@ -86,6 +86,10 @@ public class PostServiceImpl implements PostService {
         return posts.map(postMapper::toSummaryDto);
     }
 
+
+    //request.getUserId() is never called. Whatever you type into that field in Postman —
+    // the real user's id, a completely different random UUID, garbage text, doesn't matter —
+    // this method never looks at it. (## You dont want to change the userId, you want the current user to never be changed once created.)
     @Override
     @Transactional
     public PostDetailDto updatePost(UUID id, PostRequest request) {

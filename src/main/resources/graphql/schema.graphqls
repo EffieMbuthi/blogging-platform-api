@@ -1,0 +1,64 @@
+# ID, String, Int ==> scaler types/ primitive
+# reference types.
+
+type Post{
+    id: ID! #This is an identifier
+    title: String!
+    body: String!
+    author: Author!
+    tagNames: [String!]!
+    comments: [Comment!]!
+    averageRating: Float!
+    reviewCount: Int!
+    createdAt: String!
+    updatedAt: String!
+}
+
+type Author{
+    id:ID!
+    name:String!
+}
+
+type Comment{
+    id:ID!
+    body:String!
+    author:Author!
+    createdAt:String!
+}
+
+type Review{
+    id: ID!
+    rating:Int!
+    author: Author!
+    createdAt:String!
+}
+
+
+
+#what a client is allowed to ask for. It is the "controller" of the GraphQL
+#this is for ONLY READ OPERATIONS(# GET)
+type Query{
+    getPost(id:ID!): Post #post return type can be null==> this whole lookup might come back empty(no post) or there is one.
+    getAllPosts(search: String, page:Int=0): [Post!]!
+    getReviewsByPost(postId: ID!): [Review!]!
+}
+
+
+input CreatePostInput{
+    userId:ID!
+    title:String!
+    body:String!
+    tagNames:[String!]!
+}
+
+input UpdatePostInput{
+    title:String!
+    body:String!
+    tagNames:[String!]!
+}
+
+type Mutation{
+    createPost(input: CreatePostInput!):Post!
+    updatePost(id: ID!, input: UpdatePostInput! ):Post!
+    deletePost(id: ID!): Boolean!
+}

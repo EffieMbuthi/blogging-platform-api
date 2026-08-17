@@ -1,8 +1,16 @@
 package com.BlogApp2.dto.response;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 import java.util.Map;
 
+
+@NoArgsConstructor
+@Getter
+@Setter
 public class ErrorResponse {
 
     private int status;
@@ -15,8 +23,8 @@ public class ErrorResponse {
     private Map<String, String> errors;
     private LocalDateTime timestamp;
 
-    public ErrorResponse() {}
 
+    //full version
     public ErrorResponse(int status, String message, Map<String, String> errors, LocalDateTime timestamp) {
         this.status = status;
         this.message = message;
@@ -25,16 +33,8 @@ public class ErrorResponse {
     }
 
     // convenience constructor for the common case: no field-level errors
+    //short version
     public ErrorResponse(int status, String message, LocalDateTime timestamp) {
         this(status, message, null, timestamp);
     }
-
-    public int getStatus() { return status; }
-    public void setStatus(int status) { this.status = status; }
-    public String getMessage() { return message; }
-    public void setMessage(String message) { this.message = message; }
-    public Map<String, String> getErrors() { return errors; }
-    public void setErrors(Map<String, String> errors) { this.errors = errors; }
-    public LocalDateTime getTimestamp() { return timestamp; }
-    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
 }

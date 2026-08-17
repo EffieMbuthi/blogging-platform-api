@@ -1,20 +1,19 @@
 package com.BlogApp2.dto.response;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.UUID;
 
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class TagResponse {
     private UUID id;
     private String name;
 
-    public TagResponse() {}
-
-    public TagResponse(UUID id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
 }
