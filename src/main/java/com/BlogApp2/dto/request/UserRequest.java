@@ -1,5 +1,7 @@
 package com.BlogApp2.dto.request;
 
+import com.BlogApp2.validation.OnCreate;
+import com.BlogApp2.validation.UniqueEmail;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -12,6 +14,7 @@ public class UserRequest {
 
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
+    @UniqueEmail(groups = OnCreate.class)
     private String email;
 
     public String getName() { return name; }
