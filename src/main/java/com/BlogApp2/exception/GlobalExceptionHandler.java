@@ -41,7 +41,9 @@ public class GlobalExceptionHandler {
             DuplicateEmailException.class,
             CommentPostMismatchException.class,
             DuplicateReviewException.class,
-            ReviewPostMismatchException.class
+            ReviewPostMismatchException.class,
+            DuplicateTagException.class,
+            TagInUseException.class
     })
     public ResponseEntity<ErrorResponse> handleConflict(RuntimeException ex) {
         ErrorResponse error = new ErrorResponse(

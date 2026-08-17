@@ -16,6 +16,6 @@ public class Tag extends BaseEntity {
     @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
     private Set<Post> posts= new HashSet<>();
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 }
