@@ -63,6 +63,25 @@ public class CommentController {
     }
 
     @Operation(
+            summary = "Update a comment on a post",
+            description = "Updates a comment's body, but only if it actually belongs to the post identified in the URL path. Author cannot be changed."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Comment updated successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "No comment exists with the given id"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "409", description = "Comment exists but does not belong to the specified post"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Validation failed")
+    })
+    @PutMapping("/{commentId}")
+    public ResponseEntity<ApiResponse<CommentResponse>> updateComment(
+            @PathVariable UUID postId,
+            @PathVariable UUID commentId,
+            @Valid @RequestBody CommentRequest request) {
+        CommentResponse updated = commentService.updateComment(postId, commentId, request);
+        return ResponseEntity.ok(ApiResponse.success("Comment updated successfully", updated));
+    }
+
+    @Operation(
             summary = "Delete a comment from a post",
             description = "Deletes a specific comment, but only if it actually belongs to the post identified in the URL path."
     )

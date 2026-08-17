@@ -63,6 +63,24 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
+    public CommentResponse updateComment(UUID postId, UUID commentId, CommentRequest request) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException(commentId));
+
+        if (!comment.getPost().getId().equals(postId)) {
+            throw new CommentPostMismatchException(commentId, postId);
+        }
+
+        // Author and post are immutable once a comment is created, only the body can change here,
+        // mirroring the same convention already used for updating a post.
+        comment.setBody(request.getBody());
+        Comment updatedComment = commentRepository.save(comment);
+
+        return commentMapper.toResponse(updatedComment);
+    }
+
+    @Override
+    @Transactional
     public void deleteComment(UUID postId, UUID commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(commentId));

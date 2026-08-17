@@ -50,6 +50,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserResponse updateUser(UUID id, UserRequest request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+
+        boolean emailChanged = !user.getEmail().equalsIgnoreCase(request.getEmail());
+        if (emailChanged && userRepository.existsByEmail(request.getEmail())) {
+            throw new DuplicateEmailException(request.getEmail());
+        }
+
+        userMapper.updateEntity(user, request);
+        User updatedUser = userRepository.save(user);
+
+        return userMapper.toResponse(updatedUser);
+    }
+
+    @Override
     public void deleteUser(UUID id) {
         if (!userRepository.existsById(id)) {
             throw new UserNotFoundException(id);

@@ -15,6 +15,11 @@ public class UserMapper {
         return user;
     }
 
+    public void updateEntity(User user, UserRequest request) {
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+    }
+
     public UserResponse toResponse(User user) {
         return new UserResponse(
                 user.getId(),
