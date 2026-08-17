@@ -14,9 +14,31 @@ type Post{
     updatedAt: String!
 }
 
+type PostSummary{
+    id: ID!
+    title: String!
+    bodyPreview: String!
+    author: Author!
+    tagNames: [String!]!
+    commentCount: Int!
+    createdAt: String!
+}
+
 type Author{
     id:ID!
     name:String!
+}
+
+type User{
+    id: ID!
+    name: String!
+    email: String!
+    createdAt: String!
+}
+
+type Tag{
+    id: ID!
+    name: String!
 }
 
 type Comment{
@@ -39,7 +61,16 @@ type Review{
 #this is for ONLY READ OPERATIONS(# GET)
 type Query{
     getPost(id:ID!): Post #post return type can be null==> this whole lookup might come back empty(no post) or there is one.
-    getAllPosts(search: String, page:Int=0): [Post!]!
+    getAllPosts(search: String, page:Int=0): [PostSummary!]!
+
+    getUser(id: ID!): User
+    getAllUsers: [User!]!
+
+    getTag(id: ID!): Tag
+    getAllTags: [Tag!]!
+
+    getCommentsByPost(postId: ID!): [Comment!]!
+
     getReviewsByPost(postId: ID!): [Review!]!
 }
 
@@ -57,8 +88,56 @@ input UpdatePostInput{
     tagNames:[String!]!
 }
 
+input CreateUserInput{
+    name: String!
+    email: String!
+}
+
+input UpdateUserInput{
+    name: String!
+    email: String!
+}
+
+input CreateTagInput{
+    name: String!
+}
+
+input UpdateTagInput{
+    name: String!
+}
+
+input CreateCommentInput{
+    userId: ID!
+    body: String!
+}
+
+input UpdateCommentInput{
+    userId: ID!
+    body: String!
+}
+
+input CreateReviewInput{
+    userId: ID!
+    rating: Int!
+}
+
 type Mutation{
     createPost(input: CreatePostInput!):Post!
     updatePost(id: ID!, input: UpdatePostInput! ):Post!
     deletePost(id: ID!): Boolean!
+
+    createUser(input: CreateUserInput!): User!
+    updateUser(id: ID!, input: UpdateUserInput!): User!
+    deleteUser(id: ID!): Boolean!
+
+    createTag(input: CreateTagInput!): Tag!
+    updateTag(id: ID!, input: UpdateTagInput!): Tag!
+    deleteTag(id: ID!): Boolean!
+
+    createComment(postId: ID!, input: CreateCommentInput!): Comment!
+    updateComment(postId: ID!, commentId: ID!, input: UpdateCommentInput!): Comment!
+    deleteComment(postId: ID!, commentId: ID!): Boolean!
+
+    createReview(postId: ID!, input: CreateReviewInput!): Review!
+    deleteReview(postId: ID!, reviewId: ID!): Boolean!
 }
