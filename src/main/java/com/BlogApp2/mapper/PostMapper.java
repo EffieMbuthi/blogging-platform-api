@@ -28,16 +28,18 @@ public class PostMapper {
     private final AuthorMapper authorMapper;
     private final CommentMapper commentMapper;
 
-    public PostSummaryDto toSummaryDto(Post post) {
-        int commentCount = commentRepository.findByPostId(post.getId()).size();
-
+    // tagNames and commentCount are computed once for a whole page of posts by the
+    // service layer, and passed in here, rather than this method querying for its own
+    // post's tags and comment count individually, which is what used to make listing
+    // posts issue several extra queries per post instead of a couple for the whole page.
+    public PostSummaryDto toSummaryDto(Post post, Set<String> tagNames, long commentCount) {
         return new PostSummaryDto(
                 post.getId(),
                 post.getTitle(),
                 buildPreview(post.getBody()),
                 authorMapper.toAuthorSummary(post.getUser()),
-                extractTagNames(post.getTags()),
-                commentCount,
+                tagNames,
+                (int) commentCount,
                 post.getCreatedAt()
         );
     }

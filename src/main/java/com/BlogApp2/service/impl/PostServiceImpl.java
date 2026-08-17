@@ -9,7 +9,10 @@ import com.BlogApp2.mapper.PostMapper;
 import com.BlogApp2.model.Post;
 import com.BlogApp2.model.Tag;
 import com.BlogApp2.model.User;
+import com.BlogApp2.repository.CommentRepository;
+import com.BlogApp2.repository.PostCommentCountProjection;
 import com.BlogApp2.repository.PostRepository;
+import com.BlogApp2.repository.PostTagProjection;
 import com.BlogApp2.repository.TagRepository;
 import com.BlogApp2.repository.UserRepository;
 import com.BlogApp2.service.PostService;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -31,6 +35,7 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
+    private final CommentRepository commentRepository;
     private final PostMapper postMapper;
 
     @Override
@@ -81,9 +86,29 @@ public class PostServiceImpl implements PostService {
     public Page<PostSummaryDto> getAllPosts(String search, Pageable pageable) {
         Page<Post> posts = (search == null || search.isBlank())
                 ? postRepository.findAll(pageable)
-                : postRepository.findByTitleContainingIgnoreCase(search, pageable);
+                : postRepository.findByTitleStartingWithIgnoreCase(search, pageable);
 
-        return posts.map(postMapper::toSummaryDto);
+        List<UUID> postIds = posts.getContent().stream().map(Post::getId).toList();
+
+        if (postIds.isEmpty()) {
+            return posts.map(post -> postMapper.toSummaryDto(post, Set.of(), 0L));
+        }
+
+        // Two queries for the whole page, not two queries per post: this is what actually
+        // fixes the N+1 pattern, the author itself no longer needs a separate query per post
+        // either, because PostRepository's @EntityGraph already joined it into the page query.
+        Map<UUID, Set<String>> tagNamesByPostId = postRepository.findTagNamesForPostIds(postIds).stream()
+                .collect(Collectors.groupingBy(
+                        PostTagProjection::getPostId,
+                        Collectors.mapping(PostTagProjection::getTagName, Collectors.toSet())));
+
+        Map<UUID, Long> commentCountByPostId = commentRepository.countByPostIds(postIds).stream()
+                .collect(Collectors.toMap(PostCommentCountProjection::getPostId, PostCommentCountProjection::getCommentCount));
+
+        return posts.map(post -> postMapper.toSummaryDto(
+                post,
+                tagNamesByPostId.getOrDefault(post.getId(), Set.of()),
+                commentCountByPostId.getOrDefault(post.getId(), 0L)));
     }
 
 

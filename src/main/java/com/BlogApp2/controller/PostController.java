@@ -61,8 +61,10 @@ public class PostController {
 
     @Operation(
             summary = "List posts (paginated, sortable, searchable)",
-            description = "Returns a page of lightweight post summaries. Supports optional `search` by title " +
-                    "keyword, plus standard `page`, `size`, and `sort` query parameters."
+            description = "Returns a page of lightweight post summaries. The optional `search` parameter matches " +
+                    "posts whose title starts with the given text (case-insensitive), which is what allows this " +
+                    "lookup to use a database index rather than scanning every row. It does not match text " +
+                    "appearing in the middle of a title. Also supports standard `page`, `size`, and `sort` query parameters."
     )
     @GetMapping
     public ResponseEntity<ApiResponse<Page<PostSummaryDto>>> getAllPosts(
